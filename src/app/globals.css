@@ -1,26 +1,54 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer theme {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-primary-dark: #7B4019;
+    --color-primary-main: #FF7D29;
+    --color-primary-light: #FFBF78;
+    --color-primary-lighter: #FFEEA9;
+    
+    /* Light mode colors */
+    --color-bg-page: #ffffff;
+    --color-bg-card: #ffffff;
+    --color-bg-header: #ffffff;
+    --color-bg-footer: #1f2937;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-text-footer: #ffffff;
+    --color-border: #e5e7eb;
+  }
+  
+  .dark {
+    /* Dark mode colors */
+    --color-bg-page: #111827;
+    --color-bg-card: #1f2937;
+    --color-bg-header: #1f2937;
+    --color-bg-footer: #111827;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #d1d5db;
+    --color-text-footer: #ffffff;
+    --color-border: #374151;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-quicksand);
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
 }
+
+/* Utility classes */
+.bg-primary-dark { background-color: var(--color-primary-dark); }
+.bg-primary-main { background-color: var(--color-primary-main); }
+.bg-primary-light { background-color: var(--color-primary-light); }
+.bg-primary-lighter { background-color: var(--color-primary-lighter); }
+
+.text-primary-dark { color: var(--color-primary-dark); }
+.text-primary-main { color: var(--color-primary-main); }
+.text-primary-light { color: var(--color-primary-light); }
+.text-primary-lighter { color: var(--color-primary-lighter); }
+
+.border-primary-dark { border-color: var(--color-primary-dark); }
+.border-primary-main { border-color: var(--color-primary-main); }
+.border-primary-light { border-color: var(--color-primary-light); }
+.border-primary-lighter { border-color: var(--color-primary-lighter); }

@@ -1,0 +1,193 @@
+[
+  {
+    "id": 1,
+    "title": "Creamy Salmon Soup",
+    "category": "Soups",
+    "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80",
+    "time": "45 min",
+    "servings": 4,
+    "difficulty": "Medium",
+    "description": "A rich and velvety salmon soup that combines tender chunks of fresh salmon with hearty vegetables in a creamy broth. This comforting dish is perfect for cold evenings and brings together the delicate flavor of salmon with aromatic herbs. The addition of melted cheddar cheese creates an extra layer of indulgence, while fresh dill adds a bright, finishing touch.",
+    "ingredients": [
+      "300g fresh salmon fillets",
+      "1 medium potato, peeled and cubed",
+      "1 carrot, sliced",
+      "1 leek (white part) or ½ onion, chopped",
+      "1 garlic clove, minced",
+      "1 tablespoon butter or olive oil",
+      "1L water or fish stock",
+      "100ml heavy cream",
+      "Salt and pepper to taste",
+      "50g cheddar cheese, grated",
+      "Fresh dill, cilantro, or parsley, chopped"
+    ],
+    "instructions": [
+      "Heat butter in a large pot over medium heat. Sauté the leek and garlic until fragrant.",
+      "Add potato and carrot, cook for 5 minutes, stirring occasionally.",
+      "Pour in water or fish stock, bring to a boil, then reduce heat and simmer for 15 minutes.",
+      "Cut salmon into chunks and add to the pot. Cook for 8-10 minutes until salmon is cooked through.",
+      "Use an immersion blender to partially blend the soup, leaving some chunks for texture.",
+      "Stir in heavy cream and cheddar cheese until melted and smooth.",
+      "Season with salt and pepper. Garnish with fresh herbs before serving."
+    ],
+    "videoUrl": "https://www.youtube.com/embed/K5oXnXp-XxM"
+  },
+  {
+    "id": 2,
+    "title": "Classic Dark Chocolate Fudge Cake",
+    "category": "Desserts",
+    "image": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80",
+    "time": "1 hr",
+    "servings": 8,
+    "difficulty": "Medium",
+    "description": "An incredibly decadent chocolate cake with an intense, rich flavor that chocolate lovers dream about. This moist, fudgy cake features a deep dark chocolate taste with a perfectly dense yet tender crumb. The combination of melted chocolate and butter creates an ultra-luxurious texture that melts in your mouth. Dust with cocoa powder for an elegant finish.",
+    "ingredients": [
+      "200g dark chocolate (70% cocoa)",
+      "175g unsalted butter",
+      "3 large eggs",
+      "200g granulated sugar",
+      "100g all-purpose flour",
+      "Cocoa powder for dusting",
+      "Pinch of salt"
+    ],
+    "instructions": [
+      "Preheat oven to 180°C (350°F). Grease and line a round cake pan.",
+      "Melt chocolate and butter together in a double boiler, stirring until smooth. Let cool slightly.",
+      "In a separate bowl, whisk eggs and sugar until pale and fluffy.",
+      "Fold the chocolate mixture into the egg mixture gently.",
+      "Sift in flour and salt, fold until just combined. Don't overmix.",
+      "Pour batter into prepared pan. Bake for 25-30 minutes until edges are set but center is slightly wobbly.",
+      "Let cool completely in pan. Dust with cocoa powder before serving."
+    ],
+    "videoUrl": "https://www.youtube.com/embed/K5oXnXp-XxM"
+  },
+  {
+    "id": 3,
+    "title": "Fresh Tuna Poke Bowl",
+    "category": "Main Dishes",
+    "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80",
+    "time": "30 min",
+    "servings": 2,
+    "difficulty": "Easy",
+    "description": "A vibrant and healthy Hawaiian-inspired bowl featuring fresh, sushi-grade tuna marinated in savory soy sauce. This colorful dish combines tender cubes of raw tuna with fluffy rice, creamy avocado, and crunchy vegetables. It's a perfect balance of textures and flavors - light yet satisfying, fresh yet deeply savory. The sesame seeds add a nutty finish to this nutritious meal.",
+    "ingredients": [
+      "300g fresh sushi-grade tuna, cubed",
+      "2 cups cooked sushi rice",
+      "1 ripe avocado, sliced",
+      "1 cup edamame, cooked",
+      "1 cucumber, thinly sliced",
+      "3 tablespoons soy sauce",
+      "1 tablespoon sesame oil",
+      "2 tablespoons sesame seeds",
+      "2 green onions, sliced",
+      "Pickled ginger (optional)"
+    ],
+    "instructions": [
+      "In a bowl, marinate tuna cubes with soy sauce and sesame oil for 10 minutes.",
+      "Divide rice between two bowls.",
+      "Arrange marinated tuna, avocado slices, edamame, and cucumber on top of rice.",
+      "Drizzle with remaining marinade.",
+      "Sprinkle with sesame seeds and green onions.",
+      "Serve immediately with pickled ginger on the side."
+    ],
+    "videoUrl": "https://www.youtube.com/embed/K5oXnXp-XxM"
+  },
+  {
+    "id": 4,
+    "title": "Chocolate Chip Cookies",
+    "category": "Desserts",
+    "image": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800&q=80",
+    "time": "25 min",
+    "servings": 24,
+    "difficulty": "Easy",
+    "description": "The ultimate homemade chocolate chip cookies with crispy edges and soft, chewy centers. These classic American cookies are loaded with chocolate chips and have that perfect golden-brown exterior. The brown sugar adds a deep, caramel-like sweetness while the vanilla extract enhances all the flavors. These cookies are perfect for any occasion and always disappear quickly!",
+    "ingredients": [
+      "200g unsalted butter, softened",
+      "150g brown sugar",
+      "100g granulated sugar",
+      "2 large eggs",
+      "300g all-purpose flour",
+      "1 teaspoon baking soda",
+      "1 teaspoon vanilla extract",
+      "200g chocolate chips",
+      "½ teaspoon salt"
+    ],
+    "instructions": [
+      "Preheat oven to 180°C (350°F). Line baking sheets with parchment paper.",
+      "Cream butter and both sugars until light and fluffy.",
+      "Beat in eggs one at a time, then add vanilla extract.",
+      "In a separate bowl, whisk together flour, baking soda, and salt.",
+      "Gradually mix dry ingredients into wet ingredients until just combined.",
+      "Fold in chocolate chips.",
+      "Drop rounded tablespoons of dough onto baking sheets, spacing 2 inches apart.",
+      "Bake for 10-12 minutes until edges are golden. Let cool on baking sheet for 5 minutes."
+    ],
+    "videoUrl": "https://www.youtube.com/embed/K5oXnXp-XxM"
+  },
+  {
+    "id": 5,
+    "title": "Carrot Cake with Cream Cheese Frosting",
+    "category": "Desserts",
+    "image": "https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=800&q=80",
+    "time": "1 hr",
+    "servings": 10,
+    "difficulty": "Medium",
+    "description": "A moist and flavorful carrot cake studded with sweet grated carrots and crunchy walnuts, topped with a tangy cream cheese frosting. The warm spices of cinnamon and nutmeg complement the natural sweetness of the carrots perfectly. This cake stays incredibly moist for days and the rich, creamy frosting provides the perfect contrast to the spiced cake layers.",
+    "ingredients": [
+      "3 large carrots, finely grated",
+      "250g all-purpose flour",
+      "200g granulated sugar",
+      "3 large eggs",
+      "200ml vegetable oil",
+      "100g walnuts, chopped",
+      "2 teaspoons cinnamon",
+      "1 teaspoon baking powder",
+      "½ teaspoon baking soda",
+      "250g cream cheese, softened",
+      "100g butter, softened",
+      "300g powdered sugar",
+      "1 teaspoon vanilla extract"
+    ],
+    "instructions": [
+      "Preheat oven to 175°C (350°F). Grease two 9-inch cake pans.",
+      "Mix flour, baking powder, baking soda, cinnamon, and salt.",
+      "In another bowl, whisk eggs, sugar, and oil until smooth.",
+      "Fold in grated carrots and walnuts.",
+      "Gradually add dry ingredients to wet ingredients, mixing until just combined.",
+      "Divide batter between pans. Bake for 30-35 minutes until a toothpick comes out clean.",
+      "Let cakes cool completely.",
+      "For frosting: Beat cream cheese and butter until smooth. Gradually add powdered sugar and vanilla.",
+      "Frost the cooled cake layers and decorate as desired."
+    ],
+    "videoUrl": "https://www.youtube.com/embed/K5oXnXp-XxM"
+  },
+  {
+    "id": 6,
+    "title": "Authentic Pasta Carbonara",
+    "category": "Main Dishes",
+    "image": "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=800&q=80",
+    "time": "20 min",
+    "servings": 4,
+    "difficulty": "Easy",
+    "description": "A classic Roman pasta dish that's simple yet incredibly luxurious. This authentic carbonara features al dente spaghetti coated in a silky sauce made from egg yolks, Parmesan cheese, and crispy pancetta. The key is using the pasta cooking water to create a creamy sauce without any cream. Each bite delivers the perfect balance of salty, savory, and peppery flavors.",
+    "ingredients": [
+      "400g spaghetti",
+      "200g pancetta or guanciale, diced",
+      "4 large egg yolks",
+      "100g Parmesan cheese, finely grated",
+      "Freshly ground black pepper",
+      "Salt for pasta water",
+      "2 tablespoons pasta cooking water"
+    ],
+    "instructions": [
+      "Bring a large pot of salted water to boil. Cook spaghetti according to package directions until al dente.",
+      "While pasta cooks, fry pancetta in a large skillet until crispy. Remove from heat.",
+      "In a bowl, whisk together egg yolks, Parmesan cheese, and plenty of black pepper.",
+      "Reserve 1 cup of pasta cooking water before draining.",
+      "Add hot drained pasta to the skillet with pancetta.",
+      "Remove skillet from heat. Quickly stir in egg mixture, adding pasta water gradually to create a creamy sauce.",
+      "Toss continuously until pasta is evenly coated. Serve immediately with extra Parmesan and black pepper."
+    ],
+    "videoUrl": "https://www.youtube.com/embed/K5oXnXp-XxM"
+  }
+]
