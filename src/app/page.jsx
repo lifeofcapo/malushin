@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChefHat, Clock, Users, Search, Heart, PlayCircle, Sun, Moon } from 'lucide-react';
-import recipes from '@/recipes.json'
+import '@/styles/styles.css';
 
 const categories = ["All", "Soups", "Main Dishes", "Desserts", "Salads", "Breakfast", "Appetizers", "Sauces", "Snacks", "Side Dishes", "Baking"];
 
 export default function MalushinRecipes() {
+  const [recipes, setRecipes] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,6 +15,36 @@ export default function MalushinRecipes() {
   const [showInstructions, setShowInstructions] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [playCardsAnimation, setPlayCardsAnimation] = useState(true);
+
+useEffect(() => {
+  fetch('/recipes.json')
+    .then(res => {
+      if (!res.ok) throw new Error(`Failed to fetch recipes.json (${res.status})`);
+      return res.json();
+    })
+    .then(data => setRecipes(data))
+    .catch(err => console.error('Error loading recipes:', err));
+}, []);
+
+  const filteredRecipes = recipes.filter(recipe => {
+  const matchesCategory = selectedCategory === "All" || recipe.category === selectedCategory;
+  const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
+  return matchesCategory && matchesSearch;
+});
+
+
+useEffect(() => {
+  // рассчитываем примерную продолжительность анимации в мс
+  const base = 500; // длительность одного элемента
+  const perItem = 100; // дополнительная задержка на каждый элемент
+  const items = Math.min(filteredRecipes.length || 6, 12); // предохранитель
+  const totalMs = base + items * perItem + 150; // немного запаса
+
+  const t = setTimeout(() => setPlayCardsAnimation(false), totalMs);
+  return () => clearTimeout(t);
+  // пустой deps — выполняется только при монтировании
+}, []); // eslint-disable-line react-hooks/exhaustive-dep
 
 useEffect(() => {
   const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -34,12 +65,6 @@ useEffect(() => {
   }
 }, [darkMode]);
 
-  const filteredRecipes = recipes.filter(recipe => {
-    const matchesCategory = selectedCategory === "All" || recipe.category === selectedCategory;
-    const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
   const toggleFavorite = (recipeId) => {
     setFavorites(prev => 
       prev.includes(recipeId) 
@@ -52,108 +77,16 @@ useEffect(() => {
     setDarkMode(!darkMode);
   };
 
+if (recipes.length === 0) {
+  return (
+    <div className="min-h-screen flex items-center justify-center text-lg text-gray-500 dark:text-gray-400">
+      Loading recipes...
+    </div>
+  );
+}
+
 return (
   <div className="min-h-screen transition-all duration-700 ease-in-out" style={{ background: darkMode ? 'linear-gradient(to bottom right, #1f2937, #111827, #1f2937)' : 'linear-gradient(to bottom right, #FFEEA9, #ffffff, #FFBF78)' }}>
-    <style>{`
-      @keyframes fadeInDown {
-        from {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      
-      @keyframes scaleIn {
-        from {
-          opacity: 0;
-          transform: scale(0.9);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      
-      .animate-fade-in-down {
-        animation: fadeInDown 0.6s ease-out forwards;
-      }
-      
-      .animate-fade-in-up {
-        animation: fadeInUp 0.6s ease-out forwards;
-      }
-      
-      .animate-fade-in {
-        animation: fadeIn 0.8s ease-out forwards;
-      }
-      
-      .animate-scale-in {
-        animation: scaleIn 0.5s ease-out forwards;
-      }
-      
-      .card-hover {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      
-      .card-hover:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      }
-      
-      .button-hover {
-        transition: all 0.3s ease;
-      }
-      
-      .button-hover:hover {
-        transform: scale(1.05);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      }
-      
-      .button-hover:active {
-        transform: scale(0.98);
-      }
-      
-      .heart-beat:active {
-        animation: heartBeat 0.3s ease-in-out;
-      }
-      
-      @keyframes heartBeat {
-        0%, 100% { transform: scale(1); }
-        25% { transform: scale(1.3); }
-        50% { transform: scale(1.1); }
-      }
-      
-      .search-focus {
-        transition: all 0.3s ease;
-      }
-      
-      .search-focus:focus {
-        transform: scale(1.02);
-      }
-    `}</style>
-    
     <header className={`sticky top-0 z-50 shadow-md transition-all duration-300 ${isLoaded ? 'animate-fade-in-down' : 'opacity-0'}`} style={{ backgroundColor: 'var(--color-bg-header)', borderBottom: '1px solid var(--color-border)' }}>
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
@@ -397,63 +330,72 @@ return (
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredRecipes.map((recipe, index) => (
-              <div
-                key={recipe.id}
-                className={`rounded-2xl shadow-lg overflow-hidden card-hover transition-all duration-300 cursor-pointer ${isLoaded ? 'animate-scale-in' : 'opacity-0'}`}
-                style={{ 
-                  backgroundColor: 'var(--color-bg-card)',
-                  border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
-                  animationDelay: `${0.4 + index * 0.1}s`
-                }}
-                onClick={() => setSelectedRecipe(recipe)}
-              >
-                <div className="relative">
-                  <img src={recipe.image} alt={recipe.title} className="w-full h-56 object-cover" />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite(recipe.id);
-                    }}
-                    className="absolute top-4 right-4 p-2 rounded-full shadow-lg button-hover heart-beat transition-all duration-300"
-                    style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
-                  >
-                    <Heart
-                      className={`w-6 h-6 transition-all duration-300 ${
-                        favorites.includes(recipe.id)
-                          ? 'fill-red-500 text-red-500'
-                          : darkMode ? 'text-gray-500' : 'text-gray-400'
-                      }`}
-                    />
-                  </button>
-                  <div className="absolute bottom-4 left-4">
-                    <span className="px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm" style={{ 
-                      backgroundColor: darkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-                      color: darkMode ? '#FFEEA9' : '#7B4019'
-                    }}>
-                      {recipe.category}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>
-                    {recipe.title}
-                  </h3>
-                  
-                  <div className="flex items-center justify-between" style={{ color: 'var(--color-text-secondary)' }}>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-5 h-5" />
-                      <span>{recipe.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      <span>{recipe.servings} serv.</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {filteredRecipes.map((recipe, index) => {
+  // рассчитываем задержку появления для каждой карточки
+  const delay = `${0.15 + index * 0.08}s`;
+  // entryClass должен приходить из состояния playCardsAnimation (добавь это state/эффект как я предлагал ранее)
+  const entryClass = playCardsAnimation ? 'card-entry play' : 'card-visible';
+
+  return (
+    <div
+      key={recipe.id}
+      className={`rounded-2xl shadow-lg overflow-hidden card-hover transition-all duration-300 cursor-pointer ${entryClass}`}
+      style={{
+        backgroundColor: 'var(--color-bg-card)',
+        border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
+        // передаём задержку в CSS-переменную
+        ['--entry-delay']: delay
+      }}
+      onClick={() => setSelectedRecipe(recipe)}
+    >
+      <div className="relative">
+        <img src={recipe.image} alt={recipe.title} className="w-full h-56 object-cover" />
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(recipe.id);
+          }}
+          className="absolute top-4 right-4 p-2 rounded-full shadow-lg button-hover heart-beat transition-all duration-300"
+          style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
+        >
+          <Heart
+            className={`w-6 h-6 transition-all duration-300 ${
+              favorites.includes(recipe.id)
+                ? 'fill-red-500 text-red-500'
+                : darkMode ? 'text-gray-500' : 'text-gray-400'
+            }`}
+          />
+        </button>
+        <div className="absolute bottom-4 left-4">
+          <span className="px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm" style={{ 
+            backgroundColor: darkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+            color: darkMode ? '#FFEEA9' : '#7B4019'
+          }}>
+            {recipe.category}
+          </span>
+        </div>
+      </div>
+      
+      <div className="p-6">
+        <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>
+          {recipe.title}
+        </h3>
+        
+        <div className="flex items-center justify-between" style={{ color: 'var(--color-text-secondary)' }}>
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5" />
+            <span>{recipe.time}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            <span>{recipe.servings} serv.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+})}
+
           </div>
 
           {filteredRecipes.length === 0 && (
@@ -464,6 +406,60 @@ return (
         </div>
       )}
     </div>
+
+      <section
+    className="w-full py-20 mt-16 transition-colors duration-500"
+    style={{
+      background: darkMode
+        ? "linear-gradient(to right, #111827, #1f2937)"
+        : "linear-gradient(to right, #FFF4D2, #FFD28F)",
+    }}
+  >
+    <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+      <div className="overflow-hidden rounded-2xl shadow-2xl" style={{ height: 620, maxHeight: '70vh' }}>
+        <img
+          src="/photo.jpg"
+          alt="YouTube Channel"
+          className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+          style={{ display: 'block' }}
+        />
+      </div>
+      <div className="space-y-6">
+        <h2
+          className="text-4xl font-bold"
+          style={{ color: darkMode ? "#FFEEA9" : "#7B4019" }}
+        >
+          Watch and Cook with <br/> Roman Malushin 🍳
+        </h2>
+        <p
+          className="text-lg leading-relaxed"
+          style={{ color: darkMode ? "#d1d5db" : "#374151" }}
+        >
+          On my YouTube channel, I share quick, creative, and easy-to-follow
+          recipes — from hearty breakfasts to elegant dinners. Each video is
+          crafted to inspire you to cook with passion and experiment with flavors.
+        </p>
+        <p
+          className="text-lg"
+          style={{ color: darkMode ? "#FFBF78" : "#7B4019" }}
+        >
+          🎥 Subscribe and join our cooking family!
+        </p>
+        <a
+          href="https://www.youtube.com/@themalushin"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-8 py-4 rounded-full font-semibold shadow-lg button-hover transition-all duration-300"
+          style={{
+            backgroundColor: darkMode ? "#FFBF78" : "#FF7D29",
+            color: darkMode ? "#7B4019" : "#ffffff",
+          }}
+        >
+          Visit YouTube Channel →
+        </a>
+      </div>
+    </div>
+  </section>
 
     <footer className="text-white mt-16 py-8 transition-colors duration-300" style={{ backgroundColor: 'var(--color-bg-footer)' }}>
       <div className="max-w-7xl mx-auto px-4 text-center">
