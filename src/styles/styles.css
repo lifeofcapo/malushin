@@ -83,7 +83,6 @@
       
       @keyframes heartBeat {
         0%, 100% { transform: scale(1); }
-        25% { transform: scale(1.3); }
         50% { transform: scale(1.1); }
       }
       

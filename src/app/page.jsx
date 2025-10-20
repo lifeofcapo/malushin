@@ -105,7 +105,7 @@ return (
   aria-label="Toggle dark mode"
 >
   <Sun className="toggle-icon toggle-icon-left text-yellow-400" />
-  <Moon className="toggle-icon toggle-icon-right text-gray-200" />
+  <Moon className="toggle-icon toggle-icon-right text-white-200" />
   <div className="toggle-slider"></div>
 </div>
 
@@ -219,7 +219,7 @@ return (
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5" />
-                    <span>{selectedRecipe.servings} servings</span>
+                    <span>{selectedRecipe.likes} Added to favorites</span>
                   </div>
                 </div>
 
@@ -388,7 +388,7 @@ return (
           </div>
           <div className="flex items-center gap-2">
             <Users className="w-5 h-5" />
-            <span>{recipe.servings} serv.</span>
+            <span>{recipe.likes} liked</span>
           </div>
         </div>
       </div>
@@ -461,7 +461,7 @@ return (
     </div>
   </section>
 
-    <footer className="text-white mt-16 py-8 transition-colors duration-300" style={{ backgroundColor: 'var(--color-bg-footer)' }}>
+    <footer className="text-white mt-0 py-8 transition-colors duration-300" style={{ backgroundColor: 'var(--color-bg-footer)' }}>
       <div className="max-w-7xl mx-auto px-4 text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
           <ChefHat className="w-8 h-8" style={{ color: darkMode ? '#FFEEA9' : '#FFBF78' }} />
