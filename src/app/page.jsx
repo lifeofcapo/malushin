@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ChefHat, Clock, Users, Search, Heart, PlayCircle, Sun, Moon } from 'lucide-react';
 import recipes from '@/recipes.json'
 
-const categories = ["All", "Soups", "Main Dishes", "Desserts", "Salads"];
+const categories = ["All", "Soups", "Main Dishes", "Desserts", "Salads", "Breakfast", "Appetizers", "Sauces", "Snacks", "Side Dishes", "Baking"];
 
 export default function MalushinRecipes() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -13,19 +13,20 @@ export default function MalushinRecipes() {
   const [favorites, setFavorites] = useState([]);
   const [showInstructions, setShowInstructions] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
 useEffect(() => {
   const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   setDarkMode(isDark);
   
-  // Apply immediately
   if (isDark) {
     document.documentElement.classList.add('dark');
   }
+  
+  setTimeout(() => setIsLoaded(true), 100);
 }, []);
 
 useEffect(() => {
-  // Apply dark mode class to HTML element
   if (darkMode) {
     document.documentElement.classList.add('dark');
   } else {
@@ -52,48 +53,154 @@ useEffect(() => {
   };
 
 return (
-  <div className="min-h-screen transition-colors duration-300" style={{ background: darkMode ? 'linear-gradient(to bottom right, #1f2937, #111827, #1f2937)' : 'linear-gradient(to bottom right, #FFEEA9, #ffffff, #FFBF78)' }}>
-    <header className="sticky top-0 z-50 shadow-sm transition-colors duration-300" style={{ backgroundColor: 'var(--color-bg-header)', borderBottom: '1px solid var(--color-border)' }}>
+  <div className="min-h-screen transition-all duration-700 ease-in-out" style={{ background: darkMode ? 'linear-gradient(to bottom right, #1f2937, #111827, #1f2937)' : 'linear-gradient(to bottom right, #FFEEA9, #ffffff, #FFBF78)' }}>
+    <style>{`
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      .animate-fade-in-down {
+        animation: fadeInDown 0.6s ease-out forwards;
+      }
+      
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+      
+      .animate-fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+      
+      .animate-scale-in {
+        animation: scaleIn 0.5s ease-out forwards;
+      }
+      
+      .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      
+      .button-hover {
+        transition: all 0.3s ease;
+      }
+      
+      .button-hover:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+      
+      .button-hover:active {
+        transform: scale(0.98);
+      }
+      
+      .heart-beat:active {
+        animation: heartBeat 0.3s ease-in-out;
+      }
+      
+      @keyframes heartBeat {
+        0%, 100% { transform: scale(1); }
+        25% { transform: scale(1.3); }
+        50% { transform: scale(1.1); }
+      }
+      
+      .search-focus {
+        transition: all 0.3s ease;
+      }
+      
+      .search-focus:focus {
+        transform: scale(1.02);
+      }
+    `}</style>
+    
+    <header className={`sticky top-0 z-50 shadow-md transition-all duration-300 ${isLoaded ? 'animate-fade-in-down' : 'opacity-0'}`} style={{ backgroundColor: 'var(--color-bg-header)', borderBottom: '1px solid var(--color-border)' }}>
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ChefHat className="w-10 h-10 text-primary-main" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-dark to-primary-main bg-clip-text text-transparent">
+            <ChefHat className="w-10 h-10" style={{ color: darkMode ? '#FFEEA9' : '#FFBF78' }} />
+            <h1 className="text-4xl font-bold" style={{ color: darkMode ? '#FFEEA9' : '#FFBF78' }}>
               Malushin
             </h1>
           </div>
           <div className="flex items-center gap-4">
             <p className="hidden md:block" style={{ color: 'var(--color-text-secondary)' }}>Secret Recipes</p>
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full transition-colors duration-300"
-              style={{ backgroundColor: darkMode ? '#374151' : '#f3f4f6' }}
-            >
-              {darkMode ? <Sun className="w-6 h-6 text-primary-lighter" /> : <Moon className="w-6 h-6 text-primary-dark" />}
-            </button>
+<div
+  onClick={toggleDarkMode}
+  className="toggle-switch"
+  role="button"
+  aria-label="Toggle dark mode"
+>
+  <Sun className="toggle-icon toggle-icon-left text-yellow-400" />
+  <Moon className="toggle-icon toggle-icon-right text-gray-200" />
+  <div className="toggle-slider"></div>
+</div>
+
+
           </div>
         </div>
       </div>
     </header>
 
     {!selectedRecipe && (
-      <div className="text-white py-16 transition-colors duration-300" style={{ background: darkMode ? 'linear-gradient(to right, #1f2937, #7B4019)' : 'linear-gradient(to right, #7B4019, #FF7D29)' }}>
+      <div className={`text-white py-16 transition-colors duration-300 ${isLoaded ? 'animate-fade-in' : 'opacity-0'}`} style={{ background: darkMode ? 'linear-gradient(to right, #1f2937, #7B4019)' : 'linear-gradient(to right, #7B4019, #FF7D29)' }}>
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-5xl font-bold mb-4">Discover Unique Flavors</h2>
-          <p className="text-xl mb-8" style={{ color: darkMode ? '#FFBF78' : '#FFEEA9' }}>The best recipes for every occasion</p>
+          <h2 className="text-5xl font-bold mb-4 animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: isLoaded ? 1 : 0 }}>Discover Unique Flavors</h2>
+          <p className="text-xl mb-8 animate-fade-in-up" style={{ color: darkMode ? '#FFBF78' : '#FFEEA9', animationDelay: '0.3s', opacity: isLoaded ? 1 : 0 }}>The best recipes for every occasion</p>
           
-          <div className="max-w-2xl mx-auto relative">
+          <div className="max-w-2xl mx-auto relative animate-scale-in" style={{ animationDelay: '0.4s', opacity: isLoaded ? 1 : 0 }}>
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search recipes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-full text-lg focus:outline-none focus:ring-4 shadow-lg transition-colors duration-300"
+              className="w-full pl-12 pr-4 py-4 rounded-full text-lg focus:outline-none focus:ring-4 shadow-lg search-focus transition-all duration-300"
               style={{ 
                 backgroundColor: darkMode ? '#374151' : '#ffffff',
                 color: darkMode ? '#ffffff' : '#1f2937',
-                border: darkMode ? '1px solid #4b5563' : 'none'
+                border: darkMode ? '1px solid #4b5563' : 'none',
+                boxShadow: darkMode ? '0 10px 30px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.1)'
               }}
             />
           </div>
@@ -103,14 +210,13 @@ return (
 
     <div className="max-w-7xl mx-auto px-4 py-8">
       {selectedRecipe ? (
-        // Recipe Detail View
         <div>
           <button
             onClick={() => {
               setSelectedRecipe(null);
               setShowInstructions(false);
             }}
-            className="mb-6 px-6 py-2 rounded-lg shadow-md transition-colors duration-300"
+            className="mb-6 px-6 py-2 rounded-lg shadow-md button-hover transition-all duration-300"
             style={{ 
               backgroundColor: darkMode ? '#FFBF78' : '#FF7D29',
               color: darkMode ? '#7B4019' : '#ffffff'
@@ -119,7 +225,7 @@ return (
             ← Back
           </button>
           
-          <div className="rounded-2xl shadow-xl overflow-hidden transition-colors duration-300" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+          <div className="rounded-2xl shadow-2xl overflow-hidden transition-colors duration-300 animate-scale-in" style={{ backgroundColor: 'var(--color-bg-card)' }}>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <img src={selectedRecipe.image} alt={selectedRecipe.title} className="w-full h-80 object-cover" />
@@ -140,7 +246,7 @@ return (
                     />
                   </div>
                   <p className="text-xs text-center mt-3" style={{ color: 'var(--color-text-secondary)' }}>
-                    💡 Use format: https://www.youtube.com/embed/VIDEO_ID
+                    💡 Subscribe to YouTube channel for more!
                   </p>
                 </div>
               </div>
@@ -160,13 +266,13 @@ return (
                   </div>
                   <button
                     onClick={() => toggleFavorite(selectedRecipe.id)}
-                    className="p-2 rounded-full transition-colors duration-300"
+                    className="p-2 rounded-full transition-all duration-300 heart-beat button-hover"
                     style={{ backgroundColor: darkMode ? '#374151' : '#f3f4f6' }}
                   >
                     <Heart
-                      className={`w-7 h-7 ${
+                      className={`w-7 h-7 transition-all duration-300 ${
                         favorites.includes(selectedRecipe.id)
-                          ? darkMode ? 'fill-primary-light text-primary-light' : 'fill-primary-main text-primary-main'
+                          ? 'fill-red-500 text-red-500'
                           : darkMode ? 'text-gray-500' : 'text-gray-400'
                       }`}
                     />
@@ -204,7 +310,7 @@ return (
                 <div className="flex gap-2 mb-4">
                   <button
                     onClick={() => setShowInstructions(false)}
-                    className="flex-1 py-2 px-4 rounded-lg font-medium transition-colors duration-300"
+                    className="flex-1 py-2 px-4 rounded-lg font-medium button-hover transition-all duration-300"
                     style={{
                       backgroundColor: !showInstructions 
                         ? (darkMode ? '#FFBF78' : '#FF7D29')
@@ -218,7 +324,7 @@ return (
                   </button>
                   <button
                     onClick={() => setShowInstructions(true)}
-                    className="flex-1 py-2 px-4 rounded-lg font-medium transition-colors duration-300"
+                    className="flex-1 py-2 px-4 rounded-lg font-medium button-hover transition-all duration-300"
                     style={{
                       backgroundColor: showInstructions 
                         ? (darkMode ? '#FFBF78' : '#FF7D29')
@@ -231,6 +337,7 @@ return (
                     Instructions
                   </button>
                 </div>
+                
                 {!showInstructions ? (
                   <div>
                     <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Ingredients</h3>
@@ -266,21 +373,22 @@ return (
           </div>
         </div>
       ) : (
-        // Recipe Grid View
         <div>
-          <div className="flex flex-wrap gap-3 mb-8 justify-center">
-            {categories.map(category => (
+          <div className={`flex flex-wrap gap-3 mb-8 justify-center ${isLoaded ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
+            {categories.map((category, index) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className="px-6 py-3 rounded-full font-medium transition-all duration-300 shadow"
+                className="px-6 py-3 rounded-full font-medium button-hover transition-all duration-300 shadow-md"
                 style={{
                   background: selectedCategory === category
                     ? (darkMode ? 'linear-gradient(to right, #FFBF78, #FFEEA9)' : 'linear-gradient(to right, #7B4019, #FF7D29)')
                     : (darkMode ? '#374151' : '#ffffff'),
                   color: selectedCategory === category
                     ? (darkMode ? '#7B4019' : '#ffffff')
-                    : 'var(--color-text-primary)'
+                    : 'var(--color-text-primary)',
+                  animationDelay: `${0.3 + index * 0.05}s`,
+                  opacity: isLoaded ? 1 : 0
                 }}
               >
                 {category}
@@ -289,13 +397,14 @@ return (
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredRecipes.map(recipe => (
+            {filteredRecipes.map((recipe, index) => (
               <div
                 key={recipe.id}
-                className="rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                className={`rounded-2xl shadow-lg overflow-hidden card-hover transition-all duration-300 cursor-pointer ${isLoaded ? 'animate-scale-in' : 'opacity-0'}`}
                 style={{ 
                   backgroundColor: 'var(--color-bg-card)',
-                  border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`
+                  border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
+                  animationDelay: `${0.4 + index * 0.1}s`
                 }}
                 onClick={() => setSelectedRecipe(recipe)}
               >
@@ -306,13 +415,13 @@ return (
                       e.stopPropagation();
                       toggleFavorite(recipe.id);
                     }}
-                    className="absolute top-4 right-4 p-2 rounded-full shadow-lg hover:scale-110 transition"
+                    className="absolute top-4 right-4 p-2 rounded-full shadow-lg button-hover heart-beat transition-all duration-300"
                     style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
                   >
                     <Heart
-                      className={`w-6 h-6 ${
+                      className={`w-6 h-6 transition-all duration-300 ${
                         favorites.includes(recipe.id)
-                          ? darkMode ? 'fill-primary-light text-primary-light' : 'fill-primary-main text-primary-main'
+                          ? 'fill-red-500 text-red-500'
                           : darkMode ? 'text-gray-500' : 'text-gray-400'
                       }`}
                     />
@@ -362,7 +471,7 @@ return (
           <ChefHat className="w-8 h-8" style={{ color: darkMode ? '#FFEEA9' : '#FFBF78' }} />
           <h3 className="text-2xl font-bold">Malushin</h3>
         </div>
-        <p style={{ color: darkMode ? '#9ca3af' : '#d1d5db' }}>Secret Recipes © 2025</p>
+        <p style={{ color: darkMode ? '#9ca3af' : '#d1d5db' }}> All Rights Reserved © 2025</p>
       </div>
     </footer>
   </div>

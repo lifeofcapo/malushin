@@ -52,3 +52,65 @@ body {
 .border-primary-main { border-color: var(--color-primary-main); }
 .border-primary-light { border-color: var(--color-primary-light); }
 .border-primary-lighter { border-color: var(--color-primary-lighter); }
+
+/* ======================= */
+/*  Dark Mode Toggle Switch */
+/* ======================= */
+.toggle-switch {
+  position: relative;
+  width: 60px;
+  height: 32px;
+  border-radius: 9999px;
+  background-color: var(--color-primary-lighter);
+  cursor: pointer;
+  transition: all 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-switch .toggle-icon {
+  width: 18px;
+  height: 18px;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.toggle-switch .toggle-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--color-primary-main);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* When dark mode is active */
+.dark .toggle-switch {
+  background-color: #374151;
+}
+
+.dark .toggle-slider {
+  transform: translateX(28px);
+  background-color: #FFEEA9;
+}
+
+/* Icon visibility animation */
+.toggle-icon-left {
+  opacity: 1;
+}
+.dark .toggle-icon-left {
+  opacity: 0;
+}
+
+.toggle-icon-right {
+  opacity: 0;
+}
+.dark .toggle-icon-right {
+  opacity: 1;
+}
