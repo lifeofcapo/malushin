@@ -420,19 +420,6 @@ return (
                           }`}
                         />
                       </button>
-                      <button
-                        onClick={(e) => toggleFavorite(recipe.id, e)}
-                        className="absolute top-4 right-16 p-2 rounded-full shadow-lg button-hover transition-all duration-300"
-                        style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
-                      >
-                        <Heart
-                          className={`w-6 h-6 transition-all duration-300 ${
-                            favorites.includes(recipe.id)
-                              ? 'fill-red-500 text-red-500'
-                              : darkMode ? 'text-gray-500' : 'text-gray-400'
-                          }`}
-                        />
-                      </button>
                       <div className="absolute bottom-4 left-4">
                         <span className="px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm" style={{ 
                           backgroundColor: darkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
@@ -469,7 +456,7 @@ return (
             </div>
             {filteredRecipes.length === 0 && (
               <div className="text-center py-16">
-                <p className="text-2xl" style={{ color: 'var(--color-text-secondary)' }}>No recipes found</p>
+                <p className="text-2xl" style={{ color: 'var(--color-text-secondary)' }}>No se encontraron recetas</p>
             </div>
           )}
         </div>
@@ -498,21 +485,22 @@ return (
           className="text-4xl font-bold"
           style={{ color: darkMode ? "#FFEEA9" : "#7B4019" }}
         >
-          Watch and Cook with <br/> Roman Malushin 🍳
+          Canal de YouTube
+          Mira y cocina con <br/> Roman Malushin 🍳
         </h2>
         <p
           className="text-lg leading-relaxed"
           style={{ color: darkMode ? "#d1d5db" : "#374151" }}
         >
-          On my YouTube channel, I share quick, creative, and easy-to-follow
-          recipes — from hearty breakfasts to elegant dinners. Each video is
-          crafted to inspire you to cook with passion and experiment with flavors.
+          En mi canal de YouTube, comparto recetas rápidas, creativas y fáciles de seguir,
+          desde desayunos sustanciosos hasta cenas elegantes. Cada video está
+          diseñado para inspirarte a cocinar con pasión y experimentar con sabores.
         </p>
         <p
           className="text-lg"
           style={{ color: darkMode ? "#FFBF78" : "#7B4019" }}
         >
-          🎥 Subscribe and join our cooking family!
+          🎥 ¡Suscríbete y únete a nuestra familia culinaria!
         </p>
         <a
           href="https://www.youtube.com/@themalushin"
@@ -524,7 +512,7 @@ return (
             color: darkMode ? "#7B4019" : "#ffffff",
           }}
         >
-          Visit YouTube Channel →
+          Visita nuestro canal de YouTube →
         </a>
       </div>
     </div>
