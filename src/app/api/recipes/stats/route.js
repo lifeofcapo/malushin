@@ -10,7 +10,6 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Recipe ID is required' }, { status: 400 });
     }
 
-    // Получаем статистику из KV
     const views = await kv.get(`recipe:${recipeId}:views`) || 0;
     const likes = await kv.get(`recipe:${recipeId}:likes`) || 0;
 
@@ -28,7 +27,7 @@ export async function POST(request) {
   try {
     const { searchParams } = new URL(request.url);
     const recipeId = searchParams.get('recipeId');
-    const userId = request.headers.get('user-id') || 'anonymous'; // Простая проверка
+    const userId = request.headers.get('user-id') || `anonymous:${Date.now()}`;
     
     if (!recipeId) {
       return NextResponse.json({ error: 'Recipe ID is required' }, { status: 400 });
@@ -40,15 +39,14 @@ export async function POST(request) {
     if (type === 'view') {
       await kv.incr(`recipe:${recipeId}:views`);
     } else if (type === 'like') {
-      // Проверяем, не лайкал ли уже пользователь
-      const hasLiked = await kv.get(`recipe:${recipeId}:liked:${userId}`);
+      const likeKey = `recipe:${recipeId}:liked:${userId}`;
+      const hasLiked = await kv.get(likeKey);
+      
       if (!hasLiked) {
         await kv.incr(`recipe:${recipeId}:likes`);
-        await kv.set(`recipe:${recipeId}:liked:${userId}`, '1', { ex: 86400 }); // 24 часа
+        await kv.set(likeKey, '1', { ex: 2592000 });
       }
     }
-
-    // Возвращаем обновленную статистику
     const views = await kv.get(`recipe:${recipeId}:views`) || 0;
     const likes = await kv.get(`recipe:${recipeId}:likes`) || 0;
 

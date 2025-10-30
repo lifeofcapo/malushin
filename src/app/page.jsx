@@ -14,8 +14,6 @@ export default function MalushinRecipes() {
   const [favorites, setFavorites] = useState([]);
   const [showInstructions, setShowInstructions] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [playCardsAnimation, setPlayCardsAnimation] = useState(true);
   const [recipeStats, setRecipeStats] = useState({});
   const [userLikes, setUserLikes] = useState(new Set());
 
@@ -45,27 +43,33 @@ const trackView = async (recipeId) => {
     console.error('Error tracking view:', error);
   }
 };
-
-const handleLike = async (recipeId, e) => {
-  if (e) e.stopPropagation();
-  
-  try {
-    const res = await fetch(`/api/recipes/stats?recipeId=${recipeId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'like' })
-    });
+  const handleLike = async (recipeId, e) => {
+    if (e) e.stopPropagation();
     
-    if (res.ok) {
-      const stats = await res.json();
-      setRecipeStats(prev => ({ ...prev, [recipeId]: stats }));
-      setUserLikes(prev => new Set([...prev, recipeId]));
-    }
-  } catch (error) {
-    console.error('Error updating like:', error);
-  }
-};
+    try {
+      const userId = localStorage.getItem('userId') || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      if (!localStorage.getItem('userId')) {
+        localStorage.setItem('userId', userId);
+      }
 
+      const res = await fetch(`/api/recipes/stats?recipeId=${recipeId}`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'user-id': userId
+        },
+        body: JSON.stringify({ type: 'like' })
+      });
+      
+      if (res.ok) {
+        const stats = await res.json();
+        setRecipeStats(prev => ({ ...prev, [recipeId]: stats }));
+        setUserLikes(prev => new Set([...prev, recipeId]));
+      }
+    } catch (error) {
+      console.error('Error updating like:', error);
+    }
+  };
   useEffect(() => {
     const loadAllStats = async () => {
       if (recipes.length === 0) return;
@@ -104,36 +108,25 @@ const filteredRecipes = recipes.filter(recipe => {
   return matchesCategory && matchesSearch;
 });
 
+  useEffect(() => {
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setDarkMode(isDark);
+    
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
 
-useEffect(() => {
-  const base = 500; 
-  const perItem = 100; 
-  const items = Math.min(filteredRecipes.length || 6, 12);
-  const totalMs = base + items * perItem + 150; 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
-  const t = setTimeout(() => setPlayCardsAnimation(false), totalMs);
-  return () => clearTimeout(t);
-}, []); 
-useEffect(() => {
-  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  setDarkMode(isDark);
-  
-  if (isDark) {
-    document.documentElement.classList.add('dark');
-  }
-  
-  setTimeout(() => setIsLoaded(true), 100);
-}, []);
-
-useEffect(() => {
-  if (darkMode) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-}, [darkMode]);
-
-  const toggleFavorite = (recipeId) => {
+  const toggleFavorite = (recipeId, e) => {
+    if (e) e.stopPropagation();
     setFavorites(prev => 
       prev.includes(recipeId) 
         ? prev.filter(id => id !== recipeId)
@@ -145,88 +138,86 @@ useEffect(() => {
     setDarkMode(!darkMode);
   };
 
-if (recipes.length === 0) {
-  return (
-    <div className="min-h-screen flex items-center justify-center text-lg text-gray-500 dark:text-gray-400">
-      Loading recipes...
-    </div>
-  );
-}
+  if (recipes.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-lg text-gray-500 dark:text-gray-400">
+        Loading recipes...
+      </div>
+    );
+  }
 
 return (
-  <div className="min-h-screen transition-all duration-700 ease-in-out" style={{ background: darkMode ? 'linear-gradient(to bottom right, #1f2937, #111827, #1f2937)' : 'linear-gradient(to bottom right, #FFEEA9, #ffffff, #FFBF78)' }}>
-    <header className={`sticky top-0 z-50 shadow-md transition-all duration-300 ${isLoaded ? 'animate-fade-in-down' : 'opacity-0'}`} style={{ backgroundColor: 'var(--color-bg-header)', borderBottom: '1px solid var(--color-border)' }}>
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <ChefHat className="w-10 h-10" style={{ color: darkMode ? '#FFEEA9' : '#FFBF78' }} />
-            <h1 className="text-4xl font-bold" style={{ color: darkMode ? '#FFEEA9' : '#FFBF78' }}>
-              Malushin
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <p className="hidden md:block" style={{ color: 'var(--color-text-secondary)' }}>Secret Recipes</p>
-<div
-  onClick={toggleDarkMode}
-  className="toggle-switch"
-  role="button"
-  aria-label="Toggle dark mode"
->
-  <Sun className="toggle-icon toggle-icon-left text-yellow-400" />
-  <Moon className="toggle-icon toggle-icon-right text-white-200" />
-  <div className="toggle-slider"></div>
-</div>
-
-
+    <div className="min-h-screen transition-all duration-700 ease-in-out" style={{ background: darkMode ? 'linear-gradient(to bottom right, #1f2937, #111827, #1f2937)' : 'linear-gradient(to bottom right, #FFEEA9, #ffffff, #FFBF78)' }}>
+      <header className="sticky top-0 z-50 shadow-md transition-all duration-300" style={{ backgroundColor: 'var(--color-bg-header)', borderBottom: '1px solid var(--color-border)' }}>
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <ChefHat className="w-10 h-10" style={{ color: darkMode ? '#FFEEA9' : '#FFBF78' }} />
+              <h1 className="text-4xl font-bold" style={{ color: darkMode ? '#FFEEA9' : '#FFBF78' }}>
+                Malushin
+              </h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <p className="hidden md:block" style={{ color: 'var(--color-text-secondary)' }}>Secret Recipes</p>
+              <div
+                onClick={toggleDarkMode}
+                className="toggle-switch"
+                role="button"
+                aria-label="Toggle dark mode"
+              >
+                <Sun className="toggle-icon toggle-icon-left text-yellow-400" />
+                <Moon className="toggle-icon toggle-icon-right text-white-200" />
+                <div className="toggle-slider"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    {!selectedRecipe && (
-      <div className={`text-white py-16 transition-colors duration-300 ${isLoaded ? 'animate-fade-in' : 'opacity-0'}`} style={{ background: darkMode ? 'linear-gradient(to right, #1f2937, #7B4019)' : 'linear-gradient(to right, #7B4019, #FF7D29)' }}>
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-5xl font-bold mb-4 animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: isLoaded ? 1 : 0 }}>Discover Unique Flavors</h2>
-          <p className="text-xl mb-8 animate-fade-in-up" style={{ color: darkMode ? '#FFBF78' : '#FFEEA9', animationDelay: '0.3s', opacity: isLoaded ? 1 : 0 }}>The best recipes for every occasion</p>
-          
-          <div className="max-w-2xl mx-auto relative animate-scale-in" style={{ animationDelay: '0.4s', opacity: isLoaded ? 1 : 0 }}>
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search recipes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-full text-lg focus:outline-none focus:ring-4 shadow-lg search-focus transition-all duration-300"
-              style={{ 
-                backgroundColor: darkMode ? '#374151' : '#ffffff',
-                color: darkMode ? '#ffffff' : '#1f2937',
-                border: darkMode ? '1px solid #4b5563' : 'none',
-                boxShadow: darkMode ? '0 10px 30px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.1)'
+      {!selectedRecipe && (
+        <div className="text-white py-16 transition-colors duration-300" style={{ background: darkMode ? 'linear-gradient(to right, #1f2937, #7B4019)' : 'linear-gradient(to right, #7B4019, #FF7D29)' }}>
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            <h2 className="text-5xl font-bold mb-4" style={{ color: darkMode ? '#FFEEA9' : '#ffffff' }}>Discover Unique Flavors</h2>
+            <p className="text-xl mb-8" style={{ color: darkMode ? '#FFBF78' : '#FFEEA9' }}>The best recipes for every occasion</p>
+            
+            <div className="max-w-2xl mx-auto relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search recipes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 rounded-full text-lg focus:outline-none focus:ring-4 shadow-lg search-focus transition-all duration-300"
+                style={{ 
+                  backgroundColor: darkMode ? '#374151' : '#ffffff',
+                  color: darkMode ? '#ffffff' : '#1f2937',
+                  border: darkMode ? '1px solid #4b5563' : 'none',
+                  boxShadow: darkMode ? '0 10px 30px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.1)'
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {selectedRecipe ? (
+          <div>
+            <button
+              onClick={() => {
+                setSelectedRecipe(null);
+                setShowInstructions(false);
               }}
-            />
-          </div>
-        </div>
-      </div>
-    )}
-
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {selectedRecipe ? (
-        <div>
-          <button
-            onClick={() => {
-              setSelectedRecipe(null);
-              setShowInstructions(false);
-            }}
-            className="mb-6 px-6 py-2 rounded-lg shadow-md button-hover transition-all duration-300"
-            style={{ 
-              backgroundColor: darkMode ? '#FFBF78' : '#FF7D29',
-              color: darkMode ? '#7B4019' : '#ffffff'
-            }}
-          >
-            ← Back
-          </button>
+              className="mb-6 px-6 py-2 rounded-lg shadow-md button-hover transition-all duration-300"
+              style={{ 
+                backgroundColor: darkMode ? '#FFBF78' : '#FF7D29',
+                color: darkMode ? '#7B4019' : '#ffffff'
+              }}
+            >
+              ← Back
+            </button>
           
-          <div className="rounded-2xl shadow-2xl overflow-hidden transition-colors duration-300 animate-scale-in" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+          <div className="rounded-2xl shadow-2xl overflow-hidden transition-colors duration-300" style={{ backgroundColor: 'var(--color-bg-card)' }}>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <img src={selectedRecipe.image} alt={selectedRecipe.title} className="w-full h-80 object-cover" />
@@ -379,8 +370,8 @@ return (
         </div>
       ) : (
         <div>
-          <div className={`flex flex-wrap gap-3 mb-8 justify-center ${isLoaded ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
-            {categories.map((category, index) => (
+          <div className="flex flex-wrap gap-3 mb-8 justify-center">
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -392,8 +383,6 @@ return (
                   color: selectedCategory === category
                     ? (darkMode ? '#7B4019' : '#ffffff')
                     : 'var(--color-text-primary)',
-                  animationDelay: `${0.3 + index * 0.05}s`,
-                  opacity: isLoaded ? 1 : 0
                 }}
               >
                 {category}
@@ -401,77 +390,86 @@ return (
             ))}
           </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-  {filteredRecipes.map((recipe, index) => {
-    const delay = `${0.15 + index * 0.08}s`;
-    const entryClass = playCardsAnimation ? 'card-entry play' : 'card-visible';
-    const stats = recipeStats[recipe.id] || { views: 0, likes: 0 };
-    const isLikedByUser = userLikes.has(recipe.id);
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredRecipes.map((recipe) => {
+              const stats = recipeStats[recipe.id] || { views: 0, likes: 0 };
+              const isLikedByUser = userLikes.has(recipe.id);
 
-  return (
-    <div
-      key={recipe.id}
-      className={`rounded-2xl shadow-lg overflow-hidden card-hover transition-all duration-300 cursor-pointer ${entryClass}`}
-      style={{
-        backgroundColor: 'var(--color-bg-card)',
-        border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
-        ['--entry-delay']: delay
-      }}
-      onClick={() => handleRecipeSelect(recipe)}
-    >
-        <div className="relative">
-          <img src={recipe.image} alt={recipe.title} className="w-full h-56 object-cover" />
-          <button
-            onClick={(e) => handleLike(recipe.id, e)}
-            className="absolute top-4 right-4 p-2 rounded-full shadow-lg button-hover heart-beat transition-all duration-300"
-            style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
-          >
-            <Heart
-              className={`w-6 h-6 transition-all duration-300 ${
-                isLikedByUser
-                  ? 'fill-red-500 text-red-500'
-                  : darkMode ? 'text-gray-500' : 'text-gray-400'
-              }`}
-            />
-          </button>
-          <div className="absolute bottom-4 left-4">
-            <span className="px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm" style={{ 
-              backgroundColor: darkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-              color: darkMode ? '#FFEEA9' : '#7B4019'
-            }}>
-              {recipe.category}
-            </span>
-          </div>
-        </div>
-      
-        <div className="p-6">
-          <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>
-            {recipe.title}
-          </h3>
-        
-          <div className="flex items-center justify-between mb-3" style={{ color: 'var(--color-text-secondary)' }}>
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5" />
-              <span>{recipe.time}</span>
+                return (
+                  <div
+                    key={recipe.id}
+                    className="rounded-2xl shadow-lg overflow-hidden card-hover transition-all duration-300 cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--color-bg-card)',
+                      border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`
+                    }}
+                    onClick={() => handleRecipeSelect(recipe)}
+                  >
+                    <div className="relative">
+                      <img src={recipe.image} alt={recipe.title} className="w-full h-56 object-cover" />
+                      <button
+                        onClick={(e) => handleLike(recipe.id, e)}
+                        className="absolute top-4 right-4 p-2 rounded-full shadow-lg button-hover heart-beat transition-all duration-300"
+                        style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
+                      >
+                        <Heart
+                          className={`w-6 h-6 transition-all duration-300 ${
+                            isLikedByUser
+                              ? 'fill-red-500 text-red-500'
+                              : darkMode ? 'text-gray-500' : 'text-gray-400'
+                          }`}
+                        />
+                      </button>
+                      <button
+                        onClick={(e) => toggleFavorite(recipe.id, e)}
+                        className="absolute top-4 right-16 p-2 rounded-full shadow-lg button-hover transition-all duration-300"
+                        style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
+                      >
+                        <Heart
+                          className={`w-6 h-6 transition-all duration-300 ${
+                            favorites.includes(recipe.id)
+                              ? 'fill-red-500 text-red-500'
+                              : darkMode ? 'text-gray-500' : 'text-gray-400'
+                          }`}
+                        />
+                      </button>
+                      <div className="absolute bottom-4 left-4">
+                        <span className="px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm" style={{ 
+                          backgroundColor: darkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                          color: darkMode ? '#FFEEA9' : '#7B4019'
+                        }}>
+                          {recipe.category}
+                        </span>
+                      </div>
+                    </div>
+                  
+                    <div className="p-6">
+                      <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>
+                        {recipe.title}
+                      </h3>
+                    
+                      <div className="flex items-center justify-between mb-3" style={{ color: 'var(--color-text-secondary)' }}>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-5 h-5" />
+                          <span>{recipe.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="w-5 h-5" />
+                          <span>{stats.likes} likes</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                        <Eye className="w-4 h-4" />
+                        <span>{stats.views} views</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              <span>{stats.likes} likes</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-            <Eye className="w-4 h-4" />
-            <span>{stats.views} views</span>
-          </div>
-        </div>
-      </div>
-    );
-  })}
-
-    </div>
-          {filteredRecipes.length === 0 && (
-            <div className="text-center py-16">
-              <p className="text-2xl" style={{ color: 'var(--color-text-secondary)' }}>No recipes found</p>
+            {filteredRecipes.length === 0 && (
+              <div className="text-center py-16">
+                <p className="text-2xl" style={{ color: 'var(--color-text-secondary)' }}>No recipes found</p>
             </div>
           )}
         </div>
