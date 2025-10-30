@@ -445,10 +445,6 @@ return (
                           <span>{stats.likes} likes</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                        <Eye className="w-4 h-4" />
-                        <span>{stats.views} views</span>
-                      </div>
                     </div>
                   </div>
                 );
