@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ChefHat, Clock, Users, Search, Heart, PlayCircle, Sun, Moon } from 'lucide-react';
+import { ChefHat, Clock, Users, Search, Heart, PlayCircle, Sun, Moon, Eye } from 'lucide-react';
 import '@/styles/styles.css';
 
-const categories = ["All", "Soups", "Main Dishes", "Desserts", "Salads", "Breakfast", "Appetizers", "Sauces", "Snacks", "Side Dishes", "Baking"];
+const categories = ["All", "Favorites", "Soups", "Main Dishes", "Desserts", "Salads", "Breakfast", "Appetizers", "Sauces", "Snacks", "Side Dishes", "Baking"];
 
 export default function MalushinRecipes() {
   const [recipes, setRecipes] = useState([]);
@@ -16,6 +16,8 @@ export default function MalushinRecipes() {
   const [darkMode, setDarkMode] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [playCardsAnimation, setPlayCardsAnimation] = useState(true);
+  const [recipeStats, setRecipeStats] = useState({});
+  const [userLikes, setUserLikes] = useState(new Set());
 
 useEffect(() => {
   fetch('/recipes.json')
@@ -27,25 +29,91 @@ useEffect(() => {
     .catch(err => console.error('Error loading recipes:', err));
 }, []);
 
-  const filteredRecipes = recipes.filter(recipe => {
-  const matchesCategory = selectedCategory === "All" || recipe.category === selectedCategory;
+const trackView = async (recipeId) => {
+  try {
+    const res = await fetch(`/api/recipes/stats?recipeId=${recipeId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'view' })
+    });
+    
+    if (res.ok) {
+      const stats = await res.json();
+      setRecipeStats(prev => ({ ...prev, [recipeId]: stats }));
+    }
+  } catch (error) {
+    console.error('Error tracking view:', error);
+  }
+};
+
+const handleLike = async (recipeId, e) => {
+  if (e) e.stopPropagation();
+  
+  try {
+    const res = await fetch(`/api/recipes/stats?recipeId=${recipeId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'like' })
+    });
+    
+    if (res.ok) {
+      const stats = await res.json();
+      setRecipeStats(prev => ({ ...prev, [recipeId]: stats }));
+      setUserLikes(prev => new Set([...prev, recipeId]));
+    }
+  } catch (error) {
+    console.error('Error updating like:', error);
+  }
+};
+
+  useEffect(() => {
+    const loadAllStats = async () => {
+      if (recipes.length === 0) return;
+      
+      const statsPromises = recipes.map(async (recipe) => {
+        try {
+          const res = await fetch(`/api/recipes/stats?recipeId=${recipe.id}`);
+          if (res.ok) {
+            const stats = await res.json();
+            return [recipe.id, stats];
+          }
+        } catch (error) {
+          console.error(`Error loading stats for ${recipe.id}:`, error);
+        }
+        return [recipe.id, { views: 0, likes: 0 }];
+      });
+      
+      const statsResults = await Promise.all(statsPromises);
+      const statsObj = Object.fromEntries(statsResults);
+      setRecipeStats(statsObj);
+    };
+
+    loadAllStats();
+  }, [recipes]);
+
+  const handleRecipeSelect = (recipe) => {
+    setSelectedRecipe(recipe);
+    trackView(recipe.id);
+  };
+
+const filteredRecipes = recipes.filter(recipe => {
+  const matchesCategory = 
+    selectedCategory === "All" || 
+    (selectedCategory === "Favorites" ? favorites.includes(recipe.id) : recipe.category === selectedCategory);
   const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
   return matchesCategory && matchesSearch;
 });
 
 
 useEffect(() => {
-  // рассчитываем примерную продолжительность анимации в мс
-  const base = 500; // длительность одного элемента
-  const perItem = 100; // дополнительная задержка на каждый элемент
-  const items = Math.min(filteredRecipes.length || 6, 12); // предохранитель
-  const totalMs = base + items * perItem + 150; // немного запаса
+  const base = 500; 
+  const perItem = 100; 
+  const items = Math.min(filteredRecipes.length || 6, 12);
+  const totalMs = base + items * perItem + 150; 
 
   const t = setTimeout(() => setPlayCardsAnimation(false), totalMs);
   return () => clearTimeout(t);
-  // пустой deps — выполняется только при монтировании
-}, []); // eslint-disable-line react-hooks/exhaustive-dep
-
+}, []); 
 useEffect(() => {
   const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   setDarkMode(isDark);
@@ -219,7 +287,11 @@ return (
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5" />
-                    <span>{selectedRecipe.likes} Added to favorites</span>
+                    <span>{(recipeStats[selectedRecipe.id]?.likes || 0)} likes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-5 h-5" />
+                    <span>{(recipeStats[selectedRecipe.id]?.views || 0)} views</span>
                   </div>
                 </div>
 
@@ -329,12 +401,12 @@ return (
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredRecipes.map((recipe, index) => {
-  // рассчитываем задержку появления для каждой карточки
-  const delay = `${0.15 + index * 0.08}s`;
-  // entryClass должен приходить из состояния playCardsAnimation (добавь это state/эффект как я предлагал ранее)
-  const entryClass = playCardsAnimation ? 'card-entry play' : 'card-visible';
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  {filteredRecipes.map((recipe, index) => {
+    const delay = `${0.15 + index * 0.08}s`;
+    const entryClass = playCardsAnimation ? 'card-entry play' : 'card-visible';
+    const stats = recipeStats[recipe.id] || { views: 0, likes: 0 };
+    const isLikedByUser = userLikes.has(recipe.id);
 
   return (
     <div
@@ -343,61 +415,60 @@ return (
       style={{
         backgroundColor: 'var(--color-bg-card)',
         border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
-        // передаём задержку в CSS-переменную
         ['--entry-delay']: delay
       }}
-      onClick={() => setSelectedRecipe(recipe)}
+      onClick={() => handleRecipeSelect(recipe)}
     >
-      <div className="relative">
-        <img src={recipe.image} alt={recipe.title} className="w-full h-56 object-cover" />
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFavorite(recipe.id);
-          }}
-          className="absolute top-4 right-4 p-2 rounded-full shadow-lg button-hover heart-beat transition-all duration-300"
-          style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
-        >
-          <Heart
-            className={`w-6 h-6 transition-all duration-300 ${
-              favorites.includes(recipe.id)
-                ? 'fill-red-500 text-red-500'
-                : darkMode ? 'text-gray-500' : 'text-gray-400'
-            }`}
-          />
-        </button>
-        <div className="absolute bottom-4 left-4">
-          <span className="px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm" style={{ 
-            backgroundColor: darkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-            color: darkMode ? '#FFEEA9' : '#7B4019'
-          }}>
-            {recipe.category}
-          </span>
+        <div className="relative">
+          <img src={recipe.image} alt={recipe.title} className="w-full h-56 object-cover" />
+          <button
+            onClick={(e) => handleLike(recipe.id, e)}
+            className="absolute top-4 right-4 p-2 rounded-full shadow-lg button-hover heart-beat transition-all duration-300"
+            style={{ backgroundColor: darkMode ? '#374151' : '#ffffff' }}
+          >
+            <Heart
+              className={`w-6 h-6 transition-all duration-300 ${
+                isLikedByUser
+                  ? 'fill-red-500 text-red-500'
+                  : darkMode ? 'text-gray-500' : 'text-gray-400'
+              }`}
+            />
+          </button>
+          <div className="absolute bottom-4 left-4">
+            <span className="px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm" style={{ 
+              backgroundColor: darkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+              color: darkMode ? '#FFEEA9' : '#7B4019'
+            }}>
+              {recipe.category}
+            </span>
+          </div>
         </div>
-      </div>
       
-      <div className="p-6">
-        <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>
-          {recipe.title}
-        </h3>
+        <div className="p-6">
+          <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text-primary)' }}>
+            {recipe.title}
+          </h3>
         
-        <div className="flex items-center justify-between" style={{ color: 'var(--color-text-secondary)' }}>
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            <span>{recipe.time}</span>
+          <div className="flex items-center justify-between mb-3" style={{ color: 'var(--color-text-secondary)' }}>
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              <span>{recipe.time}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              <span>{stats.likes} likes</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            <span>{recipe.likes} liked</span>
+          <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+            <Eye className="w-4 h-4" />
+            <span>{stats.views} views</span>
           </div>
         </div>
       </div>
+    );
+  })}
+
     </div>
-  );
-})}
-
-          </div>
-
           {filteredRecipes.length === 0 && (
             <div className="text-center py-16">
               <p className="text-2xl" style={{ color: 'var(--color-text-secondary)' }}>No recipes found</p>
